@@ -237,7 +237,7 @@ class CloudMiamiChatbot {
 // Auto-initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
   // Check if n8n webhook URL is configured
-  const webhookUrl = window.CHATBOT_WEBHOOK_URL || 'https://n8n.cloudmiami.net/webhook/chatbot';
+  const webhookUrl = window.CHATBOT_WEBHOOK_URL || 'https://nn.cloudmiami.org/webhook/chatbot';
 
   window.cloudMiamiChat = new CloudMiamiChatbot({
     webhookUrl: webhookUrl
