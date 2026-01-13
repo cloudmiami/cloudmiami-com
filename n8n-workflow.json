@@ -43,7 +43,7 @@
         {
             "parameters": {
                 "method": "POST",
-                "url": "https://crm.cloudmiami.org/api/rest/people",
+                "url": "https://crm.cloudmiami.org/rest/people",
                 "authentication": "genericCredentialType",
                 "genericAuthType": "httpHeaderAuth",
                 "sendHeaders": true,

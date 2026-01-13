@@ -6,12 +6,12 @@
 
 class CloudMiamiChatbot {
   constructor(config = {}) {
-    this.webhookUrl = config.webhookUrl || 'https://n8n.cloudmiami.net/webhook/chatbot';
+    this.webhookUrl = config.webhookUrl || 'https://nn.cloudmiami.org/webhook/chatbot';
     this.leadData = null;
     this.conversationId = this.generateId();
     this.isOpen = false;
     this.messages = [];
-    
+
     this.init();
   }
 
@@ -125,7 +125,7 @@ class CloudMiamiChatbot {
     message.textContent = content;
     this.messagesContainer.appendChild(message);
     this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
-    
+
     this.messages.push({ type, content, timestamp: new Date().toISOString() });
   }
 
@@ -238,7 +238,7 @@ class CloudMiamiChatbot {
 document.addEventListener('DOMContentLoaded', () => {
   // Check if n8n webhook URL is configured
   const webhookUrl = window.CHATBOT_WEBHOOK_URL || 'https://n8n.cloudmiami.net/webhook/chatbot';
-  
+
   window.cloudMiamiChat = new CloudMiamiChatbot({
     webhookUrl: webhookUrl
   });
