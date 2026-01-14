@@ -104,18 +104,22 @@
         },
         {
             "parameters": {
+                "resource": "chat",
+                "operation": "complete",
                 "model": "gpt-4o-mini",
                 "messages": {
-                    "values": [
-                        {
-                            "role": "system",
-                            "content": "You are the Cloud Miami AI assistant. Cloud Miami is an AI-native design and motion agency that offers:\n\n1. **AI Web Architecture** - High-conversion web platforms with AI chatbots\n2. **SEO Content Engines** - Scalable AI-powered content production\n3. **AI Video Production** - 2D/3D animations and AI avatars\n\nBe helpful, professional, and concise. Encourage leads to share their contact info if they haven't already. Keep responses under 100 words."
-                        },
-                        {
-                            "role": "user",
-                            "content": "={{ $json.message }}"
-                        }
-                    ]
+                    "ui": {
+                        "messages": [
+                            {
+                                "role": "system",
+                                "content": "You are the Cloud Miami AI assistant. Cloud Miami is an AI-native design and motion agency that offers:\n\n1. **AI Web Architecture** - High-conversion web platforms with AI chatbots\n2. **SEO Content Engines** - Scalable AI-powered content production\n3. **AI Video Production** - 2D/3D animations and AI avatars\n\nBe helpful, professional, and concise. Encourage leads to share their contact info if they haven't already. Keep responses under 100 words."
+                            },
+                            {
+                                "role": "user",
+                                "content": "={{ $json.message }}"
+                            }
+                        ]
+                    }
                 },
                 "options": {
                     "maxTokens": 200,
@@ -124,7 +128,7 @@
             },
             "id": "openai",
             "name": "OpenAI Chat",
-            "type": "@n8n/n8n-nodes-langchain.openAi",
+            "type": "n8n-nodes-base.openai",
             "typeVersion": 1,
             "position": [
                 700,
