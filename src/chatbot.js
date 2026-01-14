@@ -58,7 +58,8 @@ class CloudMiamiChatbot {
         <!-- Lead Capture Form -->
         <div class="chatbot-form" id="chatbot-form">
           <h5>Let's get acquainted first!</h5>
-          <input type="text" id="lead-name" placeholder="Your Name" required>
+          <input type="text" id="lead-firstname" placeholder="First Name" required>
+          <input type="text" id="lead-lastname" placeholder="Last Name" required>
           <input type="email" id="lead-email" placeholder="Email Address" required>
           <input type="url" id="lead-website" placeholder="Your Website (optional)">
           <button type="button" id="lead-submit">Start Chatting</button>
@@ -150,12 +151,13 @@ class CloudMiamiChatbot {
   }
 
   submitLeadForm() {
-    const name = document.getElementById('lead-name').value.trim();
+    const firstName = document.getElementById('lead-firstname').value.trim();
+    const lastName = document.getElementById('lead-lastname').value.trim();
     const email = document.getElementById('lead-email').value.trim();
     const website = document.getElementById('lead-website').value.trim();
 
-    if (!name || !email) {
-      alert('Please enter your name and email to continue.');
+    if (!firstName || !lastName || !email) {
+      alert('Please enter your first name, last name, and email to continue.');
       return;
     }
 
@@ -164,14 +166,14 @@ class CloudMiamiChatbot {
       return;
     }
 
-    this.leadData = { name, email, website };
+    this.leadData = { firstName, lastName, name: `${firstName} ${lastName}`, email, website };
 
     // Hide form, show input
     this.form.classList.add('hidden');
     this.inputContainer.classList.remove('hidden');
 
     // Greeting message
-    this.addMessage('bot', `Nice to meet you, ${name}! 🎉 How can I help you today? Feel free to ask about our services:`);
+    this.addMessage('bot', `Nice to meet you, ${firstName}! 🎉 How can I help you today? Feel free to ask about our services:`);
     this.addMessage('bot', `• AI Web Architecture\n• SEO Content Engines\n• AI Video Production`);
 
     // Send lead data to webhook
