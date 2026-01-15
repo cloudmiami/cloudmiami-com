@@ -2,11 +2,13 @@
  * Cloud Miami Chatbot Widget
  * Floating chat bubble that connects to n8n webhook for AI-powered responses
  * and captures lead information (Name, Email, Website)
+ * Secured with JWT authentication
  */
 
 class CloudMiamiChatbot {
   constructor(config = {}) {
     this.webhookUrl = config.webhookUrl || 'https://nn.cloudmiami.org/webhook/chatbot';
+    this.jwtSecret = config.jwtSecret || 'cM2026!wH@k$ecur3T0ken#AI-ch@tb0t';
     this.leadData = null;
     this.conversationId = this.generateId();
     this.isOpen = false;
@@ -18,6 +20,62 @@ class CloudMiamiChatbot {
 
   generateId() {
     return 'conv_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  }
+
+  // Base64URL encoding (JWT-compatible)
+  base64UrlEncode(str) {
+    const base64 = btoa(str);
+    return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+
+  // Generate JWT token for webhook authentication
+  async generateJWT() {
+    const header = {
+      alg: 'HS256',
+      typ: 'JWT'
+    };
+
+    const now = Math.floor(Date.now() / 1000);
+    const payload = {
+      iss: 'cloudmiami-chatbot',
+      sub: this.conversationId,
+      iat: now,
+      exp: now + 300, // 5 minutes expiration
+      origin: window.location.origin
+    };
+
+    const encodedHeader = this.base64UrlEncode(JSON.stringify(header));
+    const encodedPayload = this.base64UrlEncode(JSON.stringify(payload));
+    const signatureInput = `${encodedHeader}.${encodedPayload}`;
+
+    // Create HMAC-SHA256 signature using Web Crypto API
+    const encoder = new TextEncoder();
+    const keyData = encoder.encode(this.jwtSecret);
+    const messageData = encoder.encode(signatureInput);
+
+    const cryptoKey = await crypto.subtle.importKey(
+      'raw',
+      keyData,
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
+    );
+
+    const signatureBuffer = await crypto.subtle.sign('HMAC', cryptoKey, messageData);
+    const signatureArray = Array.from(new Uint8Array(signatureBuffer));
+    const signatureBase64 = btoa(String.fromCharCode(...signatureArray));
+    const encodedSignature = signatureBase64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+    return `${encodedHeader}.${encodedPayload}.${encodedSignature}`;
+  }
+
+  // Get headers with JWT authentication
+  async getAuthHeaders() {
+    const token = await this.generateJWT();
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
   }
 
   init() {
@@ -206,9 +264,10 @@ class CloudMiamiChatbot {
 
   async sendLeadToWebhook() {
     try {
+      const headers = await this.getAuthHeaders();
       await fetch(this.webhookUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: headers,
         body: JSON.stringify({
           type: 'lead_capture',
           conversationId: this.conversationId,
@@ -230,9 +289,10 @@ class CloudMiamiChatbot {
     if (!this.leadData || this.interests.size === 0) return;
 
     try {
+      const headers = await this.getAuthHeaders();
       await fetch(this.webhookUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: headers,
         body: JSON.stringify({
           type: 'lead_update',
           conversationId: this.conversationId,
@@ -263,9 +323,10 @@ class CloudMiamiChatbot {
     this.showTyping();
 
     try {
+      const headers = await this.getAuthHeaders();
       const response = await fetch(this.webhookUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: headers,
         body: JSON.stringify({
           type: 'chat_message',
           conversationId: this.conversationId,
